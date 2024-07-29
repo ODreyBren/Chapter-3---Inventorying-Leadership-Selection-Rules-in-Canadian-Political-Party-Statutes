@@ -840,35 +840,31 @@ chDescDataBallotStructure %>%
 
 
       chDescDataBallotStructure %>%
-        filter(!is.na(jurisdiction)) %>%
-        mutate(across(jurisdiction, factor, levels=c("Canada","BC","AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL"))) %>% # so the jurisdictions are in the right order
-        ggplot(aes(x = docYear, y = amountComplianceDepNumbers, colour = factor(partyNameFam), shape = PartyDocType, na.rm = TRUE))+
-        geom_point(size = 5) +
-        scale_shape_manual(values = c(0, 8 ,1)) +
-        scale_color_manual(values=c("#56B4E9", "blue", "darkgreen", "red", "darkorange", "darkblue", "chocolate1")) +
-        theme_bw() +
-        scale_x_continuous(breaks=seq(2010, 2025, 5)) + # for the x axis ticks to all appear
-        labs(x = "Year", 
-             y= "Compliance Deposit (Canadian Dollars)", 
-             color = "Party Family") +
-        facet_wrap(~ jurisdiction, ncol = 5) +
-        theme( # Facet_wrap labels
-          strip.text.x = element_text(
-            size = 16, color = "black", face = "bold"
-          ),
-          strip.text.y = element_text(
-            size = 12, color = "black", face = "bold"
-          ),
-          strip.background=element_rect(fill=NA, color=NA),
-          # Legend labels
-          legend.title = element_text(color = "black", size = 14, face = "bold"),
-          legend.text = element_text(color = "black", size = 14, face = "bold"), 
-          legend.position="bottom",
-          axis.text.x = element_text(color="black", 
-                                     size=12),
-          axis.text.y = element_text(face="bold", color="black", 
-                                     size=14)
-        )
+  filter(!is.na(jurisdiction)) %>%
+  mutate(across(jurisdiction, factor, levels = c("Canada", "BC", "AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL")),
+         PartyDocType = factor(PartyDocType, levels = c("bylaw", "constitution", "ldrRace"))) %>% # Ensure PartyDocType is a factor with specific levels
+  ggplot(aes(x = docYear, y = amountComplianceDepNumbers, colour = factor(partyNameFam), shape = PartyDocType, na.rm = TRUE)) +
+  geom_point(size = 5) +
+  scale_shape_manual(values = c("bylaw" = 16, "constitution" = 17, "ldrRace" = 15), 
+                     name = "Document Type") + # Map each categorical value to a specific shape and set legend title
+  scale_color_manual(values = c("#56B4E9", "blue", "darkgreen", "red", "darkorange", "darkblue", "chocolate1"), 
+                     name = "Party Family") + # Set the title for color legend
+  theme_bw() +
+  scale_x_continuous(breaks = seq(2010, 2025, 5)) + # for the x axis ticks to all appear
+  labs(x = "Year", 
+       y = "Compliance Deposit (Canadian Dollars)") + # Axis titles
+  facet_wrap(~ jurisdiction, ncol = 5) +
+  theme( # Facet_wrap labels
+    strip.text.x = element_text(size = 16, color = "black", face = "bold"),
+    strip.text.y = element_text(size = 12, color = "black", face = "bold"),
+    strip.background = element_rect(fill = NA, color = NA),
+    # Legend labels
+    legend.title = element_text(color = "black", size = 14, face = "bold"),
+    legend.text = element_text(color = "black", size = 14, face = "bold"), 
+    legend.position = "bottom",
+    axis.text.x = element_text(color = "black", size = 12),
+    axis.text.y = element_text(face = "bold", color = "black", size = 14)
+  )
 
 
 ```
