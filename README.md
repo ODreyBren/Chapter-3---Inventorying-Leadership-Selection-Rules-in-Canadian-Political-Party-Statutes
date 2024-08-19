@@ -87,6 +87,13 @@ chDescData$partyNameJurisdictionYear <- paste(chDescData$jurisdiction, chDescDat
 #make year numeric
 
 chDescData$docYear <- as.numeric(chDescData$docYear)
+
+#Rename Documents for Nicer Figures
+
+chDescData$PartyDocType[chDescData$PartyDocType == "bylaw"] <- "By-Law"
+chDescData$PartyDocType[chDescData$PartyDocType == "constitution"] <- "Constitution"
+chDescData$PartyDocType[chDescData$PartyDocType == "ldrRace"] <- "L. Race"
+
 ```
 
 ## Select only post-2000 documents for description of data
@@ -485,11 +492,14 @@ chDescDataBallotStructure <- merge(chDescDataBallotStructure, signaturesData)
 ####                            ####
 
 
-        chDescDataBallotStructure %>%
-          mutate(across(jurisdiction, factor, levels=c("Canada","BC","AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL"))) %>% # so the jurisdictions are in the right order
+ chDescDataBallotStructure %>%  
+          filter(!is.na(jurisdiction)) %>%
+          mutate(across(jurisdiction, factor, levels=c("Canada","BC","AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL")),
+                 PartyDocType = factor(PartyDocType, levels = c("By-Law", "Constitution", "L. Race"))) %>% 
         ggplot(aes(x = docYear, y = signatureQty, colour = factor(partyNameFam), shape = PartyDocType))+
-          geom_point(size = 5) +
-          scale_shape_manual(values = c(0, 8 ,1)) +
+          geom_point(size = 5, alpha = .7) +
+          scale_shape_manual(values = c("By-Law" = 16, "Constitution" = 17, "L. Race" = 15), 
+                             name = "Document Type") + # Map each categorical value to a specific shape and set legend title
           scale_color_manual(values=c("#56B4E9", "blue", "darkgreen", "red", "darkorange", "darkblue", "chocolate1")) +
           theme_bw() +
           scale_x_continuous(breaks=seq(2010, 2023, 5)) + # for the x axis ticks to all appear
@@ -808,10 +818,10 @@ table(chDescDataBallotStructure$partyNameJurisdictionYear, chDescDataBallotStruc
 chDescDataBallotStructure %>%
   filter(!is.na(jurisdiction)) %>%
   mutate(across(jurisdiction, factor, levels = c("Canada", "BC", "AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL")),
-         PartyDocType = factor(PartyDocType, levels = c("bylaw", "constitution", "ldrRace"))) %>% # Ensure PartyDocType is a factor with specific levels
+         PartyDocType = factor(PartyDocType, levels = c("By-Law", "Constitution", "L. Race"))) %>% # Ensure PartyDocType is a factor with specific levels
   ggplot(aes(x = docYear, y = registrationFeeNumbers, colour = factor(partyNameFam), shape = PartyDocType, na.rm = TRUE)) +
-  geom_point(size = 5) +
-  scale_shape_manual(values = c("bylaw" = 16, "constitution" = 17, "ldrRace" = 15), 
+  geom_point(size = 5, alpha = .7) +
+  scale_shape_manual(values = c("By-Law" = 16, "Constitution" = 17, "L. Race" = 15), 
                      name = "Document Type") + # Map each categorical value to a specific shape and set legend title
   scale_color_manual(values = c("#56B4E9", "blue", "darkgreen", "red", "darkorange", "darkblue", "chocolate1"), 
                      name = "Party Family") + # Set the title for color legend
@@ -839,13 +849,13 @@ chDescDataBallotStructure %>%
 ####                            ####
 
 
-      chDescDataBallotStructure %>%
+hDescDataBallotStructure %>%
   filter(!is.na(jurisdiction)) %>%
   mutate(across(jurisdiction, factor, levels = c("Canada", "BC", "AB", "SK", "MB", "ON", "QC", "NB", "NS", "NL")),
-         PartyDocType = factor(PartyDocType, levels = c("bylaw", "constitution", "ldrRace"))) %>% # Ensure PartyDocType is a factor with specific levels
+         PartyDocType = factor(PartyDocType, levels = c("By-Law", "Constitution", "L. Race"))) %>% # Ensure PartyDocType is a factor with specific levels
   ggplot(aes(x = docYear, y = amountComplianceDepNumbers, colour = factor(partyNameFam), shape = PartyDocType, na.rm = TRUE)) +
-  geom_point(size = 5) +
-  scale_shape_manual(values = c("bylaw" = 16, "constitution" = 17, "ldrRace" = 15), 
+  geom_point(size = 5, alpha = .7) +
+  scale_shape_manual(values = c("By-Law" = 16, "Constitution" = 17, "L. Race" = 15), 
                      name = "Document Type") + # Map each categorical value to a specific shape and set legend title
   scale_color_manual(values = c("#56B4E9", "blue", "darkgreen", "red", "darkorange", "darkblue", "chocolate1"), 
                      name = "Party Family") + # Set the title for color legend
